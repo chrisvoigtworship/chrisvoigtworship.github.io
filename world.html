@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enter Elarion — The Ever Song Chronicles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg:         #0a0705;
+      --amber-dark: #1a0e05;
+      --amber-mid:  #2e1500;
+      --gold:       #c9902a;
+      --gold-light: #e8b860;
+      --gold-pale:  #f0d898;
+      --cream:      #f0e6d0;
+      --cream-dim:  #c8b89a;
+      --dark-panel: rgba(10,7,5,0.92);
+      --panel-border: rgba(201,144,42,0.35);
+
+      --font-title:   'Cinzel Decorative', serif;
+      --font-heading: 'Cinzel', serif;
+      --font-body:    'EB Garamond', serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--cream);
+      font-family: var(--font-body);
+      font-size: 17px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ── Stars ── */
+    .stars {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0;
+    }
+    .star {
+      position: absolute; border-radius: 50%;
+      background: white; opacity: 0;
+      animation: twinkle var(--dur,4s) ease-in-out var(--delay,0s) infinite;
+    }
+    @keyframes twinkle {
+      0%,100%{opacity:0} 50%{opacity:var(--op,.5)}
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index:200;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1.25rem 3rem;
+      background: linear-gradient(to bottom,rgba(10,7,5,0.97) 0%,rgba(10,7,5,0) 100%);
+      border-bottom: 1px solid rgba(201,144,42,0.12);
+    }
+    .nav-brand {
+      font-family: var(--font-heading);
+      font-size:0.8rem; letter-spacing:0.25em; text-transform:uppercase;
+      color:var(--gold-light); text-decoration:none;
+    }
+    .nav-links { display:flex; gap:2.5rem; list-style:none; }
+    .nav-links a {
+      font-family:var(--font-heading); font-size:0.72rem;
+      letter-spacing:0.2em; text-transform:uppercase;
+      color:var(--cream-dim); text-decoration:none; transition:color .3s;
+    }
+    .nav-links a:hover, .nav-links a.active { color:var(--gold-light); }
+
+    /* ── Page Header ── */
+    .page-header {
+      position: relative; z-index:1;
+      padding: 8rem 2rem 3rem;
+      text-align: center;
+    }
+    .page-eyebrow {
+      font-family:var(--font-body); font-style:italic;
+      font-size:1rem; letter-spacing:0.12em;
+      color:var(--gold-light); margin-bottom:0.75rem;
+    }
+    .page-title {
+      font-family:var(--font-title);
+      font-size: clamp(2rem,5vw,3.5rem);
+      color: var(--cream);
+      text-shadow: 0 0 40px rgba(201,144,42,0.4);
+      margin-bottom:1rem;
+    }
+    .page-subtitle {
+      font-size:1.1rem; font-style:italic;
+      color:var(--cream-dim); max-width:560px; margin:0 auto 2rem;
+    }
+
+    /* ── Explorer Menu ── */
+    .explorer-menu {
+      display:flex; justify-content:center; gap:0.75rem;
+      flex-wrap:wrap; margin-bottom:3rem; position:relative; z-index:1;
+    }
+    .explorer-btn {
+      font-family:var(--font-heading); font-size:0.7rem;
+      letter-spacing:0.2em; text-transform:uppercase;
+      padding:0.6rem 1.4rem;
+      background:transparent;
+      color:var(--cream-dim);
+      border:1px solid rgba(201,144,42,0.3);
+      cursor:pointer; transition:all .3s;
+    }
+    .explorer-btn:hover, .explorer-btn.active {
+      color:var(--gold-light);
+      border-color:var(--gold);
+      background:rgba(201,144,42,0.08);
+    }
+
+    /* ── Map Container ── */
+    .map-section {
+      position:relative; z-index:1;
+      padding:0 1rem 4rem;
+    }
+    .map-wrapper {
+      position:relative;
+      max-width:1200px;
+      margin:0 auto;
+      border:1px solid rgba(201,144,42,0.25);
+      box-shadow: 0 0 80px rgba(201,144,42,0.15), inset 0 0 40px rgba(0,0,0,0.4);
+    }
+    .map-wrapper img.map-bg {
+      width:100%; display:block;
+    }
+
+    /* ── Map Hotspots ── */
+    .map-hotspots {
+      position:absolute; inset:0; pointer-events:none;
+    }
+    .hotspot {
+      position:absolute;
+      pointer-events:all;
+      cursor:pointer;
+      transform:translate(-50%,-50%);
+    }
+
+    /* City dot */
+    .hotspot-city .dot {
+      width:14px; height:14px;
+      border-radius:50%;
+      border:2px solid var(--gold);
+      background:rgba(201,144,42,0.6);
+      box-shadow:0 0 10px rgba(201,144,42,0.8), 0 0 20px rgba(201,144,42,0.3);
+      transition:all .3s;
+      position:relative; z-index:2;
+    }
+    .hotspot-city:hover .dot,
+    .hotspot-city.active .dot {
+      background:var(--gold);
+      box-shadow:0 0 16px rgba(201,144,42,1), 0 0 30px rgba(201,144,42,0.5);
+      transform:scale(1.3);
+    }
+    .hotspot-city .pulse {
+      position:absolute;
+      top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      width:14px; height:14px;
+      border-radius:50%;
+      border:1px solid var(--gold);
+      animation:pulse 2s ease-out infinite;
+      z-index:1;
+    }
+    @keyframes pulse {
+      0%{transform:translate(-50%,-50%) scale(1);opacity:.8}
+      100%{transform:translate(-50%,-50%) scale(3);opacity:0}
+    }
+
+    /* Dark location dot */
+    .hotspot-dark .dot {
+      width:10px; height:10px;
+      border-radius:50%;
+      border:1px solid rgba(130,100,200,0.6);
+      background:rgba(80,40,120,0.5);
+      transition:all .3s;
+    }
+    .hotspot-dark:hover .dot {
+      background:rgba(130,80,200,0.8);
+      box-shadow:0 0 10px rgba(130,80,200,0.6);
+    }
+
+    /* Label */
+    .hotspot-label {
+      position:absolute;
+      left:50%; top:100%;
+      transform:translateX(-50%);
+      margin-top:6px;
+      font-family:var(--font-heading);
+      font-size:0.6rem; letter-spacing:0.12em;
+      text-transform:uppercase;
+      white-space:nowrap;
+      color:var(--gold-pale);
+      text-shadow:0 1px 4px rgba(0,0,0,0.9);
+      pointer-events:none;
+      opacity:0; transition:opacity .3s;
+    }
+    .hotspot:hover .hotspot-label,
+    .hotspot.active .hotspot-label { opacity:1; }
+
+    /* ── Tooltip Panel ── */
+    #tooltip {
+      display:none;
+      position:absolute;
+      z-index:150;
+      width:280px;
+      background:var(--dark-panel);
+      border:1px solid var(--panel-border);
+      box-shadow:0 8px 40px rgba(0,0,0,0.8);
+      padding:1.25rem 1.4rem;
+      pointer-events:none;
+    }
+    #tooltip.visible { display:block; }
+    #tooltip.left  { transform:translateX(calc(-100% - 16px)); }
+    #tooltip.right { transform:translateX(16px); }
+    #tooltip.above { transform:translateY(calc(-100% - 16px)); }
+
+    .tooltip-type {
+      font-family:var(--font-heading); font-size:0.58rem;
+      letter-spacing:0.2em; text-transform:uppercase;
+      margin-bottom:0.4rem;
+    }
+    .tooltip-type.elarion { color:var(--gold); }
+    .tooltip-type.darklands { color:#a080d0; }
+
+    .tooltip-name {
+      font-family:var(--font-heading); font-size:1.05rem;
+      color:var(--cream); margin-bottom:0.6rem;
+      line-height:1.2;
+    }
+    .tooltip-desc {
+      font-size:0.9rem; color:var(--cream-dim);
+      line-height:1.6; margin-bottom:0.75rem;
+    }
+    .tooltip-book {
+      font-family:var(--font-heading); font-size:0.6rem;
+      letter-spacing:0.15em; text-transform:uppercase;
+      color:var(--gold-light);
+      border-top:1px solid rgba(201,144,42,0.2);
+      padding-top:0.6rem;
+    }
+    .tooltip-chars {
+      font-size:0.85rem; color:var(--cream-dim);
+      margin-top:0.3rem;
+    }
+    .tooltip-rule {
+      width:30px; height:1px;
+      background:var(--gold);
+      margin:0.5rem 0;
+      opacity:0.5;
+    }
+
+    /* ── Explorer Panels ── */
+    .explorer-panels {
+      position:relative; z-index:1;
+      max-width:1200px; margin:0 auto;
+      padding:0 1rem 6rem;
+    }
+    .explorer-panel {
+      display:none;
+      animation:fadeUp .5s ease forwards;
+    }
+    .explorer-panel.active { display:block; }
+    @keyframes fadeUp {
+      from{opacity:0;transform:translateY(20px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    .panel-heading {
+      font-family:var(--font-heading);
+      font-size:clamp(1.1rem,2.5vw,1.5rem);
+      letter-spacing:0.2em; text-transform:uppercase;
+      color:var(--gold-light);
+      text-align:center;
+      margin-bottom:2.5rem;
+    }
+    .panel-rule {
+      display:flex; align-items:center; gap:1rem;
+      justify-content:center; margin-bottom:2rem;
+    }
+    .panel-rule::before,.panel-rule::after {
+      content:''; flex:1; max-width:120px; height:1px;
+      background:linear-gradient(to right,transparent,var(--gold));
+    }
+    .panel-rule::after { background:linear-gradient(to left,transparent,var(--gold)); }
+    .panel-diamond { width:6px; height:6px; background:var(--gold); transform:rotate(45deg); }
+
+    /* Card grid */
+    .card-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+      gap:1.5rem;
+    }
+    .card {
+      background:rgba(26,14,5,0.7);
+      border:1px solid rgba(201,144,42,0.2);
+      padding:1.5rem;
+      transition:border-color .3s, box-shadow .3s;
+    }
+    .card:hover {
+      border-color:rgba(201,144,42,0.5);
+      box-shadow:0 4px 30px rgba(201,144,42,0.1);
+    }
+    .card-tag {
+      font-family:var(--font-heading); font-size:0.58rem;
+      letter-spacing:0.2em; text-transform:uppercase;
+      color:var(--gold); margin-bottom:0.5rem;
+    }
+    .card-name {
+      font-family:var(--font-heading); font-size:1.1rem;
+      color:var(--cream); margin-bottom:0.75rem;
+    }
+    .card-body {
+      font-size:0.95rem; color:var(--cream-dim);
+      line-height:1.7;
+    }
+    .card-detail {
+      font-size:0.85rem; color:var(--gold-pale);
+      margin-top:0.6rem; font-style:italic;
+    }
+
+    /* ── Footer ── */
+    footer {
+      position:relative; z-index:1;
+      background:var(--bg);
+      border-top:1px solid rgba(201,144,42,0.12);
+      padding:2rem 3rem;
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:1rem;
+    }
+    .footer-brand {
+      font-family:var(--font-heading); font-size:0.72rem;
+      letter-spacing:0.2em; text-transform:uppercase; color:var(--gold);
+    }
+    .footer-copy { font-size:0.8rem; color:var(--cream-dim); opacity:0.6; }
+
+    @media(max-width:768px){
+      nav { padding:1rem 1.5rem; }
+      .nav-links { gap:1.25rem; }
+      .nav-links a { font-size:0.62rem; }
+      #tooltip { width:220px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<!-- Nav -->
+<nav>
+  <a href="/" class="nav-brand">Ever Song Chronicles</a>
+  <ul class="nav-links">
+    <li><a href="/books">Books</a></li>
+    <li><a href="/world" class="active">World</a></li>
+    <li><a href="/author">Author</a></li>
+    <li><a href="/for-parents">For Parents</a></li>
+  </ul>
+</nav>
+
+<!-- Page Header -->
+<header class="page-header">
+  <p class="page-eyebrow">Explore the World</p>
+  <h1 class="page-title">Enter Elarion</h1>
+  <p class="page-subtitle">Hover over the cities and lands of Elarion to discover their stories. Explore the characters, dragons, and icons of the Ever Song Chronicles.</p>
+</header>
+
+<!-- Explorer Menu -->
+<div class="explorer-menu">
+  <button class="explorer-btn active" data-panel="map">The Map</button>
+  <button class="explorer-btn" data-panel="characters">Characters</button>
+  <button class="explorer-btn" data-panel="dragons">Dragons</button>
+  <button class="explorer-btn" data-panel="icons">Icons</button>
+  <button class="explorer-btn" data-panel="eversong">The Ever Song</button>
+</div>
+
+<!-- Map Section -->
+<div class="map-section" id="panel-map" style="display:block;">
+  <div class="map-wrapper" id="mapWrapper">
+    <img class="map-bg" src="WEB-Map.png" alt="Map of Elarion and the Darklands" />
+
+    <div class="map-hotspots" id="hotspots">
+
+      <!-- ═══ ELARION CITIES ═══ -->
+
+      <!-- Solhaven: ~50.5% across, ~47% down -->
+      <div class="hotspot hotspot-city" style="left:50.5%;top:47%;"
+           data-name="Solhaven"
+           data-type="elarion"
+           data-type-label="Capital City · Golden Vale"
+           data-desc="The heart of Elarion and home of the Hall of Lanterns — headquarters of the Lightkeepers. Solhaven sits in perpetual golden-hour light, chosen by its founders to be the literal center of the land's light. Avery and Pops live here."
+           data-book="Home of Avery — all books"
+           data-chars="Avery, Pops, Luma, Finn, Wren, Tuck">
+        <div class="pulse"></div>
+        <div class="dot"></div>
+        <div class="hotspot-label">Solhaven</div>
+      </div>
+
+      <!-- Brighthollow: ~32% across, ~52% down -->
+      <div class="hotspot hotspot-city" style="left:32%;top:52%;"
+           data-name="Brighthollow"
+           data-type="elarion"
+           data-type-label="Town · Amber Reach"
+           data-desc="A warm, lantern-lit town in the Amber Reach where the Lantern Beck winds cheerfully through its streets. Brighthollow sits at the thinning edge of Elarion's light — beautiful and a little dangerous. The first great adventure begins here."
+           data-book="Book 1 — Love"
+           data-chars="Avery, Pops, Finn, Wren, Tuck, Luma">
+        <div class="pulse"></div>
+        <div class="dot"></div>
+        <div class="hotspot-label">Brighthollow</div>
+      </div>
+
+      <!-- Stillhaven: ~60% across, ~26% down -->
+      <div class="hotspot hotspot-city" style="left:60%;top:26%;"
+           data-name="Stillhaven"
+           data-type="elarion"
+           data-type-label="Trading Town · Pale North"
+           data-desc="Elarion's major trading town, set on the southern bank of the Glasswater Run — the wide, glass-still river that forms Elarion's northern border. The Darklands begin on the far bank. Stillhaven is Elarion's most exposed edge, protected only by the river and the Song."
+           data-book="Book 3 — Peace"
+           data-chars="Avery, Pops, Elin, Luma">
+        <div class="pulse"></div>
+        <div class="dot"></div>
+        <div class="hotspot-label">Stillhaven</div>
+      </div>
+
+      <!-- Deepward: ~72% across, ~40% down -->
+      <div class="hotspot hotspot-city" style="left:72%;top:40%;"
+           data-name="Deepward"
+           data-type="elarion"
+           data-type-label="Underground City · Amber Peaks"
+           data-desc="A hidden city carved into the interior of the Amber Peaks by people who believed the stone itself would bring them closer to the Ever Song. Deepward has a Lantern Tower — but it glows without resonating. Cut off from the wider Song, its people have fractured into factions and learned to mistake waiting for patience."
+           data-book="Book 4 — Patience"
+           data-chars="Avery, Pops, Mira, Soren, Davan, Bren, Caral">
+        <div class="pulse"></div>
+        <div class="dot"></div>
+        <div class="hotspot-label">Deepward</div>
+      </div>
+
+      <!-- Cantiewood: ~29% across, ~36% down -->
+      <div class="hotspot hotspot-city" style="left:29%;top:36%;"
+           data-name="Cantiewood"
+           data-type="elarion"
+           data-type-label="Village · Singing Woods"
+           data-desc="A quiet village nestled in the Singing Woods, where the trees themselves are said to carry the Ever Song longer than anywhere else in Elarion. Sound moves differently here. People in Cantiewood listen more than they speak."
+           data-book="Story coming"
+           data-chars="">
+        <div class="pulse"></div>
+        <div class="dot"></div>
+        <div class="hotspot-label">Cantiewood</div>
+      </div>
+
+      <!-- ═══ DARKLANDS LOCATIONS ═══ -->
+
+      <!-- Grayfen: ~19% across, ~62% down -->
+      <div class="hotspot hotspot-dark" style="left:19%;top:62%;"
+           data-name="Grayfen"
+           data-type="darklands"
+           data-type-label="Darklands Village · Gray Vale"
+           data-desc="A small settlement pressed low against the shadow of distant hills. Dark wood, weathered walls, unlit lanterns, no music. The Gray Vale is the region where Elarion's Amber Reach fades into shadow — and Grayfen is where the fading went furthest. An oasis of light began here."
+           data-book="Book 2 — Joy"
+           data-chars="Avery, Pops, Luma">
+        <div class="dot"></div>
+        <div class="hotspot-label">Grayfen</div>
+      </div>
+
+      <!-- Ashenmere: ~14% across, ~19% down -->
+      <div class="hotspot hotspot-dark" style="left:14%;top:19%;"
+           data-name="Ashenmere"
+           data-type="darklands"
+           data-type-label="Darklands · The Hollowfen"
+           data-desc="A settlement deep in the Hollowfen at the northern edge of the Darklands. Little is known of Ashenmere yet — only that the light has been thin there for a very long time."
+           data-book="Story coming"
+           data-chars="">
+        <div class="dot"></div>
+        <div class="hotspot-label">Ashenmere</div>
+      </div>
+
+      <!-- Umbros Tower: ~89% across, ~21% down -->
+      <div class="hotspot hotspot-dark" style="left:89%;top:21%;"
+           data-name="Umbros' Tower"
+           data-type="darklands"
+           data-type-label="The Dimming King · Deep Darklands"
+           data-desc="Black, tall, and unlit — light does not gather here, it disappears. From this tower beyond the Shadowspine, the Dimming King watches Elarion. He does not attack with armies. He dims the light one village, one lantern, one heart at a time."
+           data-book="Series-long threat"
+           data-chars="Umbros — The Dimming King">
+        <div class="dot"></div>
+        <div class="hotspot-label">Umbros' Tower</div>
+      </div>
+
+      <!-- Nightwater Coast: ~49% across, ~73% down -->
+      <div class="hotspot hotspot-dark" style="left:49%;top:73%;"
+           data-name="Nightwater Coast"
+           data-type="darklands"
+           data-type-label="Dark Island · The Meridian Sea"
+           data-desc="A shadowed island visible from the Sunward Shore on clear days — a quiet reminder that even Elarion's safest border is not entirely safe. The sea separates it from the mainland, but the dark shape on the horizon is always there."
+           data-book="Story coming"
+           data-chars="">
+        <div class="dot"></div>
+        <div class="hotspot-label">Nightwater Coast</div>
+      </div>
+
+    </div><!-- /hotspots -->
+
+    <!-- Tooltip -->
+    <div id="tooltip">
+      <div class="tooltip-type" id="tt-type"></div>
+      <div class="tooltip-name" id="tt-name"></div>
+      <div class="tooltip-rule"></div>
+      <div class="tooltip-desc" id="tt-desc"></div>
+      <div class="tooltip-book" id="tt-book"></div>
+      <div class="tooltip-chars" id="tt-chars"></div>
+    </div>
+
+  </div><!-- /map-wrapper -->
+</div><!-- /map-section -->
+
+<!-- ═══ EXPLORER PANELS ═══ -->
+<div class="explorer-panels">
+
+  <!-- Characters -->
+  <div class="explorer-panel" id="panel-characters">
+    <div class="panel-rule"><div class="panel-diamond"></div></div>
+    <h2 class="panel-heading">The Characters</h2>
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-tag">Lightkeeper · Protagonist</div>
+        <div class="card-name">Avery</div>
+        <div class="card-body">A young Lightkeeper's apprentice who doesn't yet know she's the center of the story. Impatient, brave, and still learning that the Song leads — it doesn't follow. Each journey teaches her a deeper truth about what it means to carry light.</div>
+        <div class="card-detail">Dragon: Luma &nbsp;·&nbsp; Home: Solhaven</div>
+      </div>
+
+      <div class="card">
+        <div class="card-tag">Mentor · Lightkeeper</div>
+        <div class="card-name">Pops</div>
+        <div class="card-body">Avery's grandfather and guide — a seasoned Lightkeeper who has walked every road in Elarion. He is physically spry, the household cook, and the keeper of old stories that always seem to arrive at exactly the right moment. Pops' lantern has become a Songkeeper.</div>
+        <div class="card-detail">Dragon: Lyron &nbsp;·&nbsp; Home: Solhaven</div>
+      </div>
+
+      <div class="card">
+        <div class="card-tag">Companion · Fixer</div>
+        <div class="card-name">Finn</div>
+        <div class="card-body">Practical, a little rough around the edges, and the first one to start working on the problem when everyone else is still talking about it. Finn shows kindness through action more than words — and is slowly learning that's not always enough.</div>
+        <div class="card-detail">Fruit arc: Gentleness</div>
+      </div>
+
+      <div class="card">
+        <div class="card-tag">Companion · Perceptive</div>
+        <div class="card-name">Wren</div>
+        <div class="card-body">Quiet and deeply observant, Wren senses what others miss. She feels the light strongly and understands dragons earlier than most. Birds land near her without being called. She is learning to turn her perception into courage — to say what she sees.</div>
+        <div class="card-detail">Fruit arc: Faithfulness</div>
+      </div>
+
+      <div class="card">
+        <div class="card-tag">Companion · Heart</div>
+        <div class="card-name">Tuck</div>
+        <div class="card-body">Loud, funny, eating constantly, and almost always afraid — but the first to say something that makes everyone laugh anyway. Tuck's courage is real, it just usually shows up late. His signature lines: "I meant to do that." and "We are definitely going to be legends."</div>
+        <div class="card-detail">Fruit arc: Self-control</div>
+      </div>
+
+      <div class="card">
+        <div class="card-tag">Villain · The Dimming King</div>
+        <div class="card-name">Umbros</div>
+        <div class="card-body">Once called Umbriel, a Keeper of the Outer Lanterns, he chose his own light over the Creator's — and became the Dimming King. He does not destroy Elarion. He dims it. One village. One lantern. One heart at a time. That makes him far more dangerous than any army.</div>
+        <div class="card-detail">Home: Umbros' Tower, beyond the Shadowspine</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Dragons -->
+  <div class="explorer-panel" id="panel-dragons">
+    <div class="panel-rule"><div class="panel-diamond"></div></div>
+    <h2 class="panel-heading">The Dragons</h2>
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-tag">Avery's Dragon</div>
+        <div class="card-name">Luma</div>
+        <div class="card-body">Small enough to perch on Avery's shoulder, Luma is the Ever Song made visible — a constant, gentle presence that never leaves. Luma cannot be taken away; only Avery's awareness of her can be dimmed. When Avery returns to the Song, Luma is always there.</div>
+        <div class="card-detail">Size: shoulder-perched &nbsp;·&nbsp; Always present</div>
+      </div>
+
+      <div class="card">
+        <div class="card-tag">Pops' Dragon</div>
+        <div class="card-name">Lyron</div>
+        <div class="card-body">The largest dragon in the series — ancient, simply present, never in a hurry. Lyron does not walk so much as arrive. He reflects the depth of Pops' years with the Song. Around Lyron, the air feels older and quieter, as if the Ever Song itself is listening.</div>
+        <div class="card-detail">Size: largest &nbsp;·&nbsp; Pops' lifelong companion</div>
+      </div>
+
+      <div class="card">
+        <div class="card-tag">What Are Dragons?</div>
+        <div class="card-name">The Holy Spirit Made Visible</div>
+        <div class="card-body">In Elarion, dragons are not monsters — they are the Creator's presence given shape. Each Lightkeeper's dragon is unique to them and grows as they grow. Dragons begin invisible, becoming visible only as the keeper's light grows from candle to lantern. You cannot earn a dragon. You can only learn to see the one already there.</div>
+        <div class="card-detail">Visibility tied to spiritual growth — the candle-to-lantern threshold</div>
+      </div>
+
+      <div class="card">
+        <div class="card-tag">An Important Truth</div>
+        <div class="card-name">Losing Awareness Is Not Losing the Dragon</div>
+        <div class="card-body">When Lightkeepers drift from the Song — distracted, afraid, or pulled sideways by dissonance — they may stop sensing their dragon. But the dragon never leaves. Returning to the Song is always simple. Not always easy. But always simple. The dragon is always there, waiting to be seen again.</div>
+        <div class="card-detail">The dragon waits. The Song holds. The light remains.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Icons -->
+  <div class="explorer-panel" id="panel-icons">
+    <div class="panel-rule"><div class="panel-diamond"></div></div>
+    <h2 class="panel-heading">The Icons</h2>
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-tag">Pops' Instrument</div>
+        <div class="card-name">The Songkeeper</div>
+        <div class="card-body">Pops' lantern — transformed over a lifetime of staying in tune with the Ever Song — into a musical instrument. It is worn on a leather strap, a single object that is somehow both lantern and instrument at once. When Pops plays it, the Song is not merely heard. It is felt in the chest, the way old music always is.</div>
+        <div class="card-detail">One object &nbsp;·&nbsp; Worn on a leather strap</div>
+      </div>
+
+      <div class="card">
+        <div class="card-tag">Carried by Lightkeepers</div>
+        <div class="card-name">Lanterns</div>
+        <div class="card-body">Every Lightkeeper carries a lantern — a silver-handled glass chamber with a tiny tuning ring at the top that hums when held still enough. The lantern is not decoration. It is the Lightkeeper's calling made visible, a flame that can shine through fog, rain, and shadow. The flame grows with its carrier.</div>
+        <div class="card-detail">Candle → Lantern → Beacon &nbsp;·&nbsp; Growth made visible</div>
+      </div>
+
+      <div class="card">
+        <div class="card-tag">Heart of Every City</div>
+        <div class="card-name">Lantern Towers</div>
+        <div class="card-body">Each city and town in Elarion has a Lantern Tower — crystal panels displaying a living ribbon of color like animated stained glass. The towers receive the Ever Song and broadcast it outward. When a tower dims, the town dims with it. When the Song flows fully through a tower, the colors move and the whole city feels warmer.</div>
+        <div class="card-detail">Crystal panels &nbsp;·&nbsp; Living ribbon of color &nbsp;·&nbsp; Connected across Elarion</div>
+      </div>
+
+      <div class="card">
+        <div class="card-tag">Headquarters</div>
+        <div class="card-name">The Hall of Lanterns</div>
+        <div class="card-body">Located in Solhaven, the Hall of Lanterns is where Lightkeeper apprentices are trained, missions are assigned, and the history of the Ever Song is kept. It is not a quiet archive. It is a living place, always full of people preparing to carry light into the dark.</div>
+        <div class="card-detail">Location: Solhaven &nbsp;·&nbsp; Home of the Lightkeepers</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Ever Song -->
+  <div class="explorer-panel" id="panel-eversong">
+    <div class="panel-rule"><div class="panel-diamond"></div></div>
+    <h2 class="panel-heading">The Ever Song</h2>
+    <div style="max-width:720px;margin:0 auto;">
+
+      <p style="font-size:1.3rem;font-style:italic;color:var(--gold-pale);text-align:center;margin-bottom:2rem;line-height:1.7;">
+        In the beginning, there was the Creator. And the Creator sang.
+      </p>
+
+      <p style="margin-bottom:1.25rem;color:var(--cream);">
+        Not with words or instruments — but with something older and deeper than either. A Song that carried everything the Creator is: light, warmth, and love so complete that nothing could stand near it and remain empty. Everything that was made was made in tune with that Song.
+      </p>
+
+      <p style="margin-bottom:1.25rem;color:var(--cream);">
+        The Ever Song is always present and never moving — not a force that travels, but a conduit to the Creator himself. It cannot be exhausted, diminished, or destroyed. It can only be ignored. And in Elarion, ignoring the Song is how the darkness has always done its work — not with force, but by pulling voices sideways, one note at a time, until the melody feels like a distant memory.
+      </p>
+
+      <p style="margin-bottom:1.25rem;color:var(--cream);">
+        The Lightkeepers are those who have learned to hear the Song when others have forgotten how — and who carry that awareness into the dark places, one lantern, one road, one town at a time.
+      </p>
+
+      <div style="border:1px solid rgba(201,144,42,0.25);padding:1.5rem 2rem;margin:2rem 0;text-align:center;">
+        <p style="font-family:var(--font-heading);font-size:0.8rem;letter-spacing:0.15em;color:var(--gold-light);line-height:1.9;">
+          The Ever Song never stops.<br>
+          People just stop hearing it.<br><br>
+          The darkness is loud.<br>
+          But the Song is older.
+        </p>
+      </div>
+
+      <p style="color:var(--cream-dim);font-style:italic;text-align:center;margin-top:1.5rem;">
+        Staying in tune is not passive. It is the most active choice a person can make.
+      </p>
+
+    </div>
+  </div>
+
+</div><!-- /explorer-panels -->
+
+<footer>
+  <div class="footer-brand">Ever Song Chronicles</div>
+  <div class="footer-copy">© 2026 Chris Voigt. All rights reserved.</div>
+</footer>
+
+<script>
+// ── Stars ──
+const starsEl = document.getElementById('stars');
+for(let i=0;i<100;i++){
+  const s=document.createElement('div');
+  s.className='star';
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;--dur:${3+Math.random()*5}s;--delay:${Math.random()*8}s;--op:${.2+Math.random()*.6}`;
+  starsEl.appendChild(s);
+}
+
+// ── Explorer Menu ──
+const menuBtns = document.querySelectorAll('.explorer-btn');
+const mapSection = document.getElementById('panel-map');
+const panels = {
+  map: mapSection,
+  characters: document.getElementById('panel-characters'),
+  dragons: document.getElementById('panel-dragons'),
+  icons: document.getElementById('panel-icons'),
+  eversong: document.getElementById('panel-eversong'),
+};
+
+menuBtns.forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    menuBtns.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const key = btn.dataset.panel;
+    Object.entries(panels).forEach(([k,el])=>{
+      if(!el) return;
+      if(k==='map'){
+        el.style.display = key==='map' ? 'block' : 'none';
+      } else {
+        el.classList.toggle('active', k===key);
+      }
+    });
+  });
+});
+
+// ── Map Tooltips ──
+const tooltip = document.getElementById('tooltip');
+const ttType  = document.getElementById('tt-type');
+const ttName  = document.getElementById('tt-name');
+const ttDesc  = document.getElementById('tt-desc');
+const ttBook  = document.getElementById('tt-book');
+const ttChars = document.getElementById('tt-chars');
+const wrapper = document.getElementById('mapWrapper');
+const hotspotsEl = document.getElementById('hotspots');
+
+let activeHotspot = null;
+
+document.querySelectorAll('.hotspot').forEach(hs=>{
+  hs.addEventListener('mouseenter', e=>{
+    const d = hs.dataset;
+    ttType.textContent  = d.typeLabel || '';
+    ttType.className    = 'tooltip-type ' + (d.type==='darklands'?'darklands':'elarion');
+    ttName.textContent  = d.name || '';
+    ttDesc.textContent  = d.desc || '';
+    ttBook.textContent  = d.book ? '📖 ' + d.book : '';
+    ttChars.textContent = d.chars ? 'Characters: ' + d.chars : '';
+
+    tooltip.classList.add('visible');
+    tooltip.classList.remove('left','right','above');
+
+    // Position tooltip relative to map wrapper
+    const wRect = wrapper.getBoundingClientRect();
+    const hRect = hs.getBoundingClientRect();
+
+    let top  = (hRect.top - wRect.top) + hRect.height/2;
+    let left = (hRect.left - wRect.left) + hRect.width/2;
+
+    tooltip.style.top  = top + 'px';
+    tooltip.style.left = left + 'px';
+
+    // Flip if too far right
+    if(left > wRect.width * 0.65){
+      tooltip.classList.add('left');
+    } else {
+      tooltip.classList.add('right');
+    }
+    // Flip up if too far down
+    if(top > wRect.height * 0.7){
+      tooltip.classList.add('above');
+      tooltip.classList.remove('right','left');
+      tooltip.style.transform = 'translate(-50%, calc(-100% - 12px))';
+    }
+
+    hs.classList.add('active');
+    activeHotspot = hs;
+  });
+
+  hs.addEventListener('mouseleave',()=>{
+    tooltip.classList.remove('visible');
+    hs.classList.remove('active');
+    activeHotspot = null;
+  });
+});
+</script>
+
+</body>
+</html>

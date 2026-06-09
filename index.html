@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Ever Song Chronicles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── CSS Variables ─────────────────────────────────────────── */
+    :root {
+      --black:        #08060400;
+      --deep:         #08060480;
+      --bg-hero:      #0a0705;
+      --amber-dark:   #1a0e05;
+      --amber-mid:    #2e1500;
+      --amber-rich:   #3d1f00;
+      --amber-warm:   #5c2e00;
+      --gold:         #c9902a;
+      --gold-light:   #e8b860;
+      --gold-pale:    #f0d898;
+      --cream:        #f0e6d0;
+      --cream-dim:    #c8b89a;
+      --white:        #ffffff;
+
+      --font-title:   'Cinzel Decorative', serif;
+      --font-heading: 'Cinzel', serif;
+      --font-body:    'EB Garamond', serif;
+    }
+
+    /* ── Reset ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg-hero);
+      color: var(--cream);
+      font-family: var(--font-body);
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── Stars ─────────────────────────────────────────────────── */
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0;
+      animation: twinkle var(--dur, 4s) ease-in-out var(--delay, 0s) infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0; }
+      50% { opacity: var(--max-op, 0.6); }
+    }
+
+    /* ── Navigation ────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 3rem;
+      background: linear-gradient(to bottom, rgba(10,7,5,0.95) 0%, rgba(10,7,5,0) 100%);
+      transition: background 0.4s ease;
+    }
+    nav.scrolled {
+      background: rgba(10,7,5,0.97);
+      border-bottom: 1px solid rgba(201,144,42,0.15);
+    }
+
+    .nav-brand {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .nav-brand:hover { color: var(--gold-pale); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--font-heading);
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--cream-dim);
+      text-decoration: none;
+      transition: color 0.3s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0; right: 0;
+      height: 1px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform 0.3s ease;
+    }
+    .nav-links a:hover { color: var(--gold-light); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+
+    /* ── Hero Section ──────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      overflow: hidden;
+      background: var(--bg-hero);
+    }
+
+    /* Radial glow behind lantern */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -52%);
+      width: 600px;
+      height: 800px;
+      background: radial-gradient(ellipse at center,
+        rgba(201,144,42,0.18) 0%,
+        rgba(100,50,0,0.08) 40%,
+        transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .hero-lantern {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 420px;
+      max-width: 70vw;
+      z-index: 2;
+      opacity: 0;
+      animation: fadeInLantern 2s ease 0.5s forwards;
+    }
+    @keyframes fadeInLantern {
+      to { opacity: 1; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-body);
+      font-style: italic;
+      font-size: 1rem;
+      letter-spacing: 0.15em;
+      color: var(--gold-light);
+      opacity: 0;
+      animation: riseIn 1s ease 0.3s forwards;
+      margin-bottom: 1rem;
+    }
+
+    .hero-title {
+      font-family: var(--font-title);
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--white);
+      text-shadow:
+        0 0 60px rgba(201,144,42,0.4),
+        0 2px 4px rgba(0,0,0,0.8);
+      opacity: 0;
+      animation: riseIn 1.2s ease 0.6s forwards;
+      margin-bottom: 0.15em;
+    }
+    .hero-title .chronicles {
+      display: block;
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      letter-spacing: 0.35em;
+      color: var(--gold);
+      text-shadow:
+        0 0 30px rgba(201,144,42,0.6),
+        0 1px 3px rgba(0,0,0,0.8);
+      margin-top: 0.1em;
+    }
+
+    .hero-tagline {
+      margin-top: 2.5rem;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-style: italic;
+      color: var(--cream);
+      max-width: 520px;
+      line-height: 1.8;
+      opacity: 0;
+      animation: riseIn 1s ease 1.2s forwards;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+    }
+    .hero-tagline strong {
+      display: block;
+      font-style: normal;
+      color: var(--gold-pale);
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      opacity: 0;
+      animation: riseIn 1s ease 1.6s forwards;
+    }
+
+    .btn {
+      font-family: var(--font-heading);
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.9rem 2rem;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.08);
+      transform: translateX(-100%);
+      transition: transform 0.4s ease;
+    }
+    .btn:hover::before { transform: translateX(0); }
+
+    .btn-primary {
+      background: var(--gold);
+      color: #1a0a00;
+    }
+    .btn-primary:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(201,144,42,0.4);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--cream);
+      border: 1px solid rgba(201,144,42,0.5);
+    }
+    .btn-secondary:hover {
+      border-color: var(--gold);
+      color: var(--gold-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(201,144,42,0.2);
+    }
+
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      animation: riseIn 1s ease 2.2s forwards;
+    }
+    .hero-scroll-hint span {
+      font-family: var(--font-heading);
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.7;
+    }
+    .scroll-arrow {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(1); }
+      50% { opacity: 0.9; transform: scaleY(1.1); }
+    }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Gradient Transition ───────────────────────────────────── */
+    .gradient-bridge {
+      height: 200px;
+      background: linear-gradient(
+        to bottom,
+        var(--bg-hero) 0%,
+        var(--amber-dark) 40%,
+        var(--amber-mid) 100%
+      );
+    }
+
+    /* ── Ever Song Section ─────────────────────────────────────── */
+    .eversong {
+      background: linear-gradient(
+        to bottom,
+        var(--amber-mid) 0%,
+        var(--amber-rich) 40%,
+        var(--amber-warm) 100%
+      );
+      padding: 5rem 2rem 6rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Decorative corner flourishes */
+    .eversong::before,
+    .eversong::after {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(201,144,42,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .eversong::before { top: -100px; left: -100px; }
+    .eversong::after  { bottom: -100px; right: -100px; }
+
+    .eversong-inner {
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-rule {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+      justify-content: center;
+    }
+    .section-rule::before,
+    .section-rule::after {
+      content: '';
+      flex: 1;
+      max-width: 80px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold));
+    }
+    .section-rule::after {
+      background: linear-gradient(to left, transparent, var(--gold));
+    }
+    .rule-diamond {
+      width: 6px;
+      height: 6px;
+      background: var(--gold);
+      transform: rotate(45deg);
+    }
+
+    .section-heading {
+      font-family: var(--font-heading);
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 2rem;
+    }
+
+    .eversong-opening {
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      font-style: italic;
+      color: var(--gold-pale);
+      margin-bottom: 1.75rem;
+      line-height: 1.6;
+    }
+
+    .eversong-body {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: var(--cream);
+      margin-bottom: 1.25rem;
+      line-height: 1.85;
+    }
+
+    .eversong-callout {
+      font-family: var(--font-heading);
+      font-size: clamp(0.85rem, 2vw, 1rem);
+      letter-spacing: 0.15em;
+      color: var(--gold-light);
+      margin: 2rem 0;
+      padding: 1.25rem 2rem;
+      border-top: 1px solid rgba(201,144,42,0.3);
+      border-bottom: 1px solid rgba(201,144,42,0.3);
+    }
+
+    .eversong-cta {
+      margin-top: 2.5rem;
+    }
+
+    .btn-elarion {
+      font-family: var(--font-heading);
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      padding: 1rem 2.5rem;
+      background: transparent;
+      color: var(--gold-light);
+      border: 1px solid var(--gold);
+      text-decoration: none;
+      display: inline-block;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+    .btn-elarion::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+      z-index: -1;
+    }
+    .btn-elarion:hover {
+      color: #1a0a00;
+      box-shadow: 0 0 40px rgba(201,144,42,0.4);
+    }
+    .btn-elarion:hover::before { transform: scaleX(1); }
+    .btn-elarion .arrow {
+      display: inline-block;
+      margin-left: 0.5em;
+      transition: transform 0.3s ease;
+    }
+    .btn-elarion:hover .arrow { transform: translateX(4px); }
+
+    /* ── Footer ────────────────────────────────────────────────── */
+    footer {
+      background: var(--bg-hero);
+      border-top: 1px solid rgba(201,144,42,0.12);
+      padding: 2.5rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-brand {
+      font-family: var(--font-heading);
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--cream-dim);
+      opacity: 0.6;
+    }
+
+    /* ── Scroll reveal ─────────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.15s; }
+    .reveal-delay-2 { transition-delay: 0.3s; }
+    .reveal-delay-3 { transition-delay: 0.45s; }
+
+    /* ── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.5rem; }
+      .hero-lantern { width: 300px; }
+      footer { flex-direction: column; text-align: center; }
+    }
+    @media (max-width: 480px) {
+      .nav-links { gap: 1rem; }
+      .nav-links a { font-size: 0.65rem; letter-spacing: 0.1em; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Stars background -->
+  <div class="stars" id="stars"></div>
+
+  <!-- Navigation -->
+  <nav id="nav">
+    <a href="/" class="nav-brand">Ever Song Chronicles</a>
+    <ul class="nav-links">
+      <li><a href="/books">Books</a></li>
+      <li><a href="/world">World</a></li>
+      <li><a href="/author">Author</a></li>
+      <li><a href="/for-parents">For Parents</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+
+    <!-- Lantern video -->
+    <video
+      class="hero-lantern"
+      autoplay loop muted playsinline
+      poster=""
+      aria-hidden="true"
+    >
+      <source src="yourlantern_alpha.webm" type="video/webm" />
+      <source src="yourlantern.mov" type="video/quicktime" />
+    </video>
+
+    <div class="hero-content">
+      <p class="hero-eyebrow">A Middle Grade Fantasy Series</p>
+
+      <h1 class="hero-title">
+        The Ever<br>Song
+        <span class="chronicles">Chronicles</span>
+      </h1>
+
+      <p class="hero-tagline">
+        The shadows aren't defeated by fighting them.
+        <strong>They disappear when someone learns how to shine.</strong>
+      </p>
+
+      <div class="hero-buttons">
+        <a href="/books" class="btn btn-primary">Explore the Books</a>
+        <a href="/world" class="btn btn-secondary">Enter Elarion</a>
+      </div>
+    </div>
+
+    <div class="hero-scroll-hint">
+      <span>Discover</span>
+      <div class="scroll-arrow"></div>
+    </div>
+
+  </section>
+
+  <!-- Gradient bridge -->
+  <div class="gradient-bridge"></div>
+
+  <!-- Ever Song Section -->
+  <section class="eversong">
+    <div class="eversong-inner">
+
+      <div class="section-rule reveal">
+        <div class="rule-diamond"></div>
+      </div>
+
+      <h2 class="section-heading reveal reveal-delay-1">The Ever Song</h2>
+
+      <p class="eversong-opening reveal reveal-delay-2">
+        In the beginning, there was the Creator. And the Creator sang.
+      </p>
+
+      <p class="eversong-body reveal reveal-delay-2">
+        Not with words or instruments — but with something older and deeper than either.
+        A Song that carried everything the Creator is: light, warmth, and love so complete
+        that nothing could stand near it and remain empty.
+      </p>
+
+      <p class="eversong-body reveal reveal-delay-2">
+        Everything that was made was made in tune with that Song.
+        But not every voice chose to stay.
+      </p>
+
+      <p class="eversong-body reveal reveal-delay-3">
+        The dissonance spread — quietly at first, like a single wrong note, pulling others
+        sideways until the melody grew faint. And where the Song grew faint, the light grew thin.
+      </p>
+
+      <p class="eversong-body reveal reveal-delay-3">
+        The Creator's answer wasn't force. It was light — carried in ordinary hands.
+      </p>
+
+      <div class="eversong-callout reveal reveal-delay-3">
+        He called them Lightkeepers.
+      </div>
+
+      <div class="eversong-cta reveal reveal-delay-3">
+        <a href="/world" class="btn-elarion">
+          Discover the World of Elarion
+          <span class="arrow">→</span>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-brand">Ever Song Chronicles</div>
+    <div class="footer-copy">© 2026 Chris Voigt. All rights reserved.</div>
+  </footer>
+
+  <script>
+    // ── Generate stars ──────────────────────────────────────────
+    const starsEl = document.getElementById('stars');
+    for (let i = 0; i < 120; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      s.style.cssText = `
+        left: ${Math.random() * 100}%;
+        top: ${Math.random() * 100}%;
+        --dur: ${3 + Math.random() * 5}s;
+        --delay: ${Math.random() * 6}s;
+        --max-op: ${0.2 + Math.random() * 0.6};
+        width: ${1 + Math.random() * 2}px;
+        height: ${1 + Math.random() * 2}px;
+      `;
+      starsEl.appendChild(s);
+    }
+
+    // ── Nav scroll effect ───────────────────────────────────────
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ── Scroll reveal ───────────────────────────────────────────
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
