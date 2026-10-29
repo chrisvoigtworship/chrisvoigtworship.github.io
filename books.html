@@ -99,7 +99,7 @@
     .books-section {
       position:relative; z-index:1;
       max-width:1100px; margin:0 auto;
-      padding:0 2rem 6rem;
+      padding:0 3rem 6rem;
     }
 
     .book-card {
@@ -116,7 +116,8 @@
     .book-card:last-child { border-bottom:none; margin-bottom:0; }
     .book-card.reverse { grid-template-columns: 1fr 280px; }
     .book-card.reverse .book-cover { order:2; }
-    .book-card.reverse .book-info { order:1; padding-left:3rem; }
+    .book-card.reverse .book-number { left:auto; right:-1rem; }
+    .book-card.reverse .book-info { order:1; }
 
     .book-cover {
       position:relative;
